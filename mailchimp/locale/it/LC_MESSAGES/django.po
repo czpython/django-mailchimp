@@ -18,102 +18,103 @@ msgstr ""
 
 #: models.py:171
 msgid "Mailchimp Log"
-msgstr ""
+msgstr "Attivita' di Mailchimp"
 
 #: models.py:172
 msgid "Mailchimp Logs"
-msgstr ""
+msgstr "Attivita' di Mailchimp"
 
 #: templates/mailchimp/campaign_information.html:8
 #: templates/mailchimp/overview.html:8
 msgid "Home"
-msgstr ""
+msgstr "Principale"
 
 #: templates/mailchimp/campaign_information.html:9
 #: templates/mailchimp/overview.html:9
 msgid "mailchimp overview"
-msgstr ""
+msgstr "Panoramica Mailchimp"
 
 #: templates/mailchimp/campaign_information.html:28
 msgid "Campaign Subject"
-msgstr ""
+msgstr "Titolo campagna"
 
 #: templates/mailchimp/campaign_information.html:31
 #: templates/mailchimp/overview.html:25
 msgid "Sent Date"
-msgstr ""
+msgstr "Data Invio"
 
 #: templates/mailchimp/campaign_information.html:35
 msgid "Recipients"
-msgstr ""
+msgstr "Destinatari"
 
 #: templates/mailchimp/campaign_information.html:40
 msgid "Object"
-msgstr ""
+msgstr "Oggetto"
 
 #: templates/mailchimp/overview.html:19
 msgid "Log"
-msgstr ""
+msgstr "Attivita'"
 
 #: templates/mailchimp/overview.html:24 templates/mailchimp/overview.html:60
 msgid "Subject"
-msgstr ""
+msgstr "Titolo"
 
 #: templates/mailchimp/overview.html:40
 msgid "First"
-msgstr ""
+msgstr "Primo"
 
 #: templates/mailchimp/overview.html:50
 msgid "Last"
-msgstr ""
+msgstr "Ultimo"
 
 #: templates/mailchimp/overview.html:55
 msgid "Queue"
-msgstr ""
+msgstr "Coda"
 
 #: templates/mailchimp/overview.html:61
 msgid "Actions"
-msgstr ""
+msgstr "Azioni"
 
 #: templates/mailchimp/overview.html:68
 msgid "Send Now!"
-msgstr ""
+msgstr "Invia ora!"
 
 #: templates/mailchimp/overview.html:68
 msgid "Cancel!"
-msgstr ""
+msgstr "Annulla!"
 
 #: templates/mailchimp/overview.html:71
 msgid "No Campaigns in the Queue"
-msgstr ""
+msgstr "Nessuna campagna in coda"
 
 #: templates/mailchimp/send_button.html:23
 #: templates/mailchimp/send_button.html:25
 msgid "Sent via mailchimp:"
-msgstr ""
+msgstr "Inviate tramite Mailchimp:"
 
 #: templates/mailchimp/send_button.html:28
 msgid "scheduled for sending via mailchimp"
-msgstr ""
+msgstr "Programmate per essere intiate tramite Mailchimp"
 
 #: templates/mailchimp/send_button.html:31
 msgid "Send via Mailchimp"
-msgstr ""
+msgstr "Invia  tramite Mailchimp"
 
 #: templates/mailchimp/send_button.html:35
 msgid "Send Test Mail"
-msgstr ""
+msgstr "Invia mail di prova"
 
 #: templates/mailchimp/send_button.html:37
 msgid "your account requires a valid email to send test mails"
-msgstr ""
+msgstr "Il tuo account richied un indirizzo email valido per eseguire l'invio"
 
 #: templates/mailchimp/send_test.html:22
 msgid "Test Sending in Progress"
-msgstr ""
+msgstr "Invio di prova in corso"
 
 #: templates/mailchimp/send_test.html:23
 msgid ""
 "Please do not leave the page while the test mail is being sent.\n"
 "\t\tThis process might take several minutes."
-msgstr ""
+msgstr "Per favore non lasciare questa pagina durante l'invio di prova\n"
+"\t\tQuesto processo potrebbe richiedere alcuni minuti"
