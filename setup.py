@@ -13,10 +13,7 @@ setup(
     package_data={
         'mailchimp': [
             'templates/mailchimp/*.html',
-            'locale/en/LC_MESSAGES/django.po',
-            'locale/en/LC_MESSAGES/django.mo',
-            'locale/de/LC_MESSAGES/django.po',
-            'locale/de/LC_MESSAGES/django.mo',
+            'locale/*/LC_MESSAGES/*',
         ],
     },
 )

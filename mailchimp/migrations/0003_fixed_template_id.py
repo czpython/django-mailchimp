@@ -9,13 +9,13 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Changing field 'Queue.template_id'
-        db.alter_column('mailchimp_queue', 'template_id', self.gf('django.db.models.fields.PositiveSmallIntegerField')())
+        db.alter_column('mailchimp_queue', 'template_id', self.gf('django.db.models.fields.PositiveIntegerField')())
     
     
     def backwards(self, orm):
         
         # Changing field 'Queue.template_id'
-        db.alter_column('mailchimp_queue', 'template_id', self.gf('django.db.models.fields.CharField')(max_length=50))
+        db.alter_column('mailchimp_queue', 'template_id', self.gf('django.db.models.fields.IntegerField')())
     
     
     models = {

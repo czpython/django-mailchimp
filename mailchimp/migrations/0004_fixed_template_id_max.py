@@ -5,19 +5,13 @@ from south.v2 import SchemaMigration
 from django.db import models
 
 class Migration(SchemaMigration):
-    
+
     def forwards(self, orm):
-        
-        # Changing field 'Queue.template_id'
-        db.alter_column('mailchimp_queue', 'template_id', self.gf('django.db.models.fields.PositiveIntegerField')())
-    
-    
+        pass
+
     def backwards(self, orm):
-        
-        # Changing field 'Queue.template_id'
-        db.alter_column('mailchimp_queue', 'template_id', self.gf('django.db.models.fields.PositiveSmallIntegerField')())
-    
-    
+        pass
+
     models = {
         'mailchimp.campaign': {
             'Meta': {'object_name': 'Campaign'},
