@@ -31,7 +31,7 @@ Subscribing a user to a list:
 
 2. Now add a member to the mailing list::
 
-	list.subscribe('example@example.com',{'EMAIL':'example@example.com'})
+	list.subscribe('example@example.com', {'EMAIL':'example@example.com'})
 	
 	
 Those pesky merge vars:
@@ -103,7 +103,7 @@ When you make a post to mailchimp, you need to pass merge_vars. For example, in 
 settings on the mailchimp website, the following call adds a member to a list (with a little more info than our bare minimum example up there)::
 
     list = mailchimp.utils.get_connection().get_list_by_id(<The list's key ID>)
-    list.subscribe('example@example.com',{'EMAIL':'example@example.com', 'FNAME': 'Monthy', 'LNAME':'Pyhtons'})
+    list.subscribe('example@example.com', {'EMAIL': 'example@example.com', 'FNAME': 'Monthy', 'LNAME': 'Pyhtons'})
     
 Note the use of the 'tag' field as the key for fields (why they didn't call it 'key' or 'id' is beyond comprehension).
 
@@ -116,16 +116,19 @@ We'll now try to move up the stack and create the necessary elements to make a u
 
 Fire up your favorite editor and open your views.py. Put in the following snippet of code::
 
-	MAILCHIMP_LIST_ID = 'spamspamspamspameggsspamspam' # DRY :)
-	REDIRECT_URL_NAME = '/mailing_list_success/'
-	def add_email_to_mailing_list(request):
-	    if request.POST['email']:
-	         email_address = requst.POST['email']
-	         list = mailchimp.utils.get_connection().get_list_by_id(MAILCHIMP_LIST_ID)
-	         list.subscribe(email_address,{'EMAIL':email_address})
-	         return HttpResponseRedirect('/mailing_list_success/')
-	    else:
-	         return HttpResponseRedirect('/mailing_list_failure/')
+    from django.http import HttpResponseRedirect
+    from mailchimp import utils
+
+    MAILCHIMP_LIST_ID = 'spamspamspamspameggsspamspam' # DRY :)
+    REDIRECT_URL_NAME = '/mailing_list_success/'
+    def add_email_to_mailing_list(request):
+        if request.POST['email']:
+            email_address = request.POST['email']
+            list = utils.get_connection().get_list_by_id(MAILCHIMP_LIST_ID)
+            list.subscribe(email_address, {'EMAIL': email_address})
+            return HttpResponseRedirect('/mailing_list_success/')
+        else:
+            return HttpResponseRedirect('/mailing_list_failure/')
 
 Of course, if you feel redirecting the user is not the right approach (handling a form might be a good idea), feel
 free to adapt this simple example to your needs :p
