@@ -245,6 +245,6 @@ class Campaign(models.Model):
             return DeletedCampaign()
 
 
-class Reciever(models.Model):
-    campaign = models.ForeignKey(Campaign, related_name='recievers')
+class Receiver(models.Model):
+    campaign = models.ForeignKey(Campaign, related_name='receivers')
     email = models.EmailField()
