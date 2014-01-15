@@ -25,7 +25,7 @@ EMAIL_ADDRESS = 'casualbear@googlemail.com'
 EMAIL_ADDRESS2 = 'dummy@dummy.com'
 LIST_NAME = 'unittests'
 LIST_ID = None
-DEBUG = True
+DEBUG = False
 
 
 def capture_failures(func):
