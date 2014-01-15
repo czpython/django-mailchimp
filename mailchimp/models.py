@@ -8,6 +8,27 @@ from django.utils.translation import ugettext_lazy as _
 from mailchimp.utils import get_connection
 
 
+def suite():
+    """Django test discovery requires this.
+
+    If django-mailchimp ever gets its own tests, this will need to be updated.
+
+    """
+    import unittest
+    from mailchimp.chimpy import test_chimpy
+
+    test_chimpy.DEBUG = False
+
+    def make_test_case(test):
+        return unittest.FunctionTestCase(
+            test_chimpy.__dict__.get(test), setUp=test_chimpy.setup_module(),
+        )
+
+    # Bit hacky, but all the tests are plain functions starting with 'test_'
+    tests = filter(lambda x: x.startswith('test_'), dir(test_chimpy))
+    return unittest.TestSuite(map(make_test_case, tests))
+
+
 class QueueManager(models.Manager):
     def queue(self, campaign_type, contents, list_id, template_id, subject,
         from_email, from_name, to_email, folder_id=None, tracking_opens=True,
