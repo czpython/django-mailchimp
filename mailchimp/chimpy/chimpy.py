@@ -58,7 +58,7 @@ class Connection(object):
 
         try:
             if 'error' in result:
-                raise ChimpyException("%s:\n%s" % (result['error'], params))
+                raise ChimpyException("%s:\n%s" % (result['error'], params), result['code'])
         except TypeError:
             # thrown when results is not iterable (eg bool)
             pass
