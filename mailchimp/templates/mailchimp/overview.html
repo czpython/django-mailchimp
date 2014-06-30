@@ -1,11 +1,11 @@
 {% extends "admin/change_list.html" %}
-{% load i18n admin_modify adminmedia mailchimp_admin_tags %}
+{% load i18n admin_modify mailchimp_admin_tags %}
 
 {% block bodyclass %}change-list{% endblock %}
 
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">
-     <a href="{% url admin:index %}">{% trans "Home" %}</a> &rsaquo;
+     <a href="{% url 'admin:index' %}">{% trans "Home" %}</a> &rsaquo;
      {% trans "mailchimp overview" %}
 </div>
 {% endif %}{% endblock %}

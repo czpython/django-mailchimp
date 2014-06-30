@@ -1,8 +1,8 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_modify adminmedia %}
+{% load i18n admin_modify %}
 
 {% block extrahead %}{{ block.super }}
-<script type="text/javascript" src="{{ MEDIA_URL }}admin/js/jquery.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.min.js"></script>
 {% endblock %}
 
 {% block bodyclass %}change-form{% endblock %}
@@ -23,7 +23,7 @@ django.jQuery(document).ready(function(){
 	<div class="module aligned campaininfo">
 		<h2>{% trans "Test Sending in Progress" %}</h2>
 		<p style="padding-top:10px;" id="mc-progress-info">{% blocktrans %}Please do not leave the page while the test mail is being sent.
-		This process might take several minutes.{% endblocktrans %} <img src="{{ MEDIA_URL }}img/ajax-loader.gif"></p>
+		This process might take several minutes.{% endblocktrans %} <img src="{{ STATIC_URL }}img/ajax-loader.gif"></p>
 	</div>
 </div>
 {% endblock %}

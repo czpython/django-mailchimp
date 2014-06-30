@@ -20,7 +20,7 @@
 	{% if is_sent %}
 		{% if sent_date %}
 			{% if can_view %}
-				<a href="{% url mailchimp_campaign_info campaign_id %}">{% trans "Sent via mailchimp:" %}{{ sent_date }}</a>
+				<a href="{% url 'mailchimp_campaign_info campaign_id' %}">{% trans "Sent via mailchimp:" %}{{ sent_date }}</a>
 			{% else %}
 				<span>{% trans "Sent via mailchimp:" %}{{ sent_date }}</span>
 			{% endif %}
@@ -32,7 +32,7 @@
 	</li>
 	<li>
 	{% if can_test %}
-		<a href="{% url mailchimp_test_for_object pk=primary_key content_type=content_type %}">{% trans "Send Test Mail" %}</a>
+		<a href="{% url 'mailchimp_test_for_object pk=primary_key content_type=content_type' %}">{% trans "Send Test Mail" %}</a>
 	{% else %}
 		<span>{% trans "your account requires a valid email to send test mails" %}</span>
 	{% endif %}
@@ -46,7 +46,7 @@ django.jQuery('#send_via_mailchimp').click(
   		var answer = confirm(question);
       	if (answer)
         {
-            window.location = "{% url mailchimp_schedule_for_object pk=primary_key content_type=content_type %}";
+            window.location = "{% url 'mailchimp_schedule_for_object pk=primary_key content_type=content_type' %}";
         }
     }
 )

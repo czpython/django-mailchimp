@@ -1,12 +1,12 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_modify adminmedia %}
+{% load i18n admin_modify %}
 
 {% block bodyclass %}change-form{% endblock %}
 
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">
-     <a href="{% url admin:index %}">{% trans "Home" %}</a> &rsaquo;
-     <a href="{% url mailchimp_overview %}">{% trans "mailchimp overview" %}</a> &rsaquo;  
+     <a href="{% url 'admin:index' %}">{% trans "Home" %}</a> &rsaquo;
+     <a href="{% url 'mailchimp_overview' %}">{% trans "mailchimp overview" %}</a> &rsaquo;  
      {{ campaign.mc.subject|truncatewords:18 }}
 </div>
 {% endif %}{% endblock %}
