@@ -4,7 +4,7 @@ import pprint
 from utils import transform_datetime
 from utils import flatten
 from warnings import warn
-from django.utils import simplejson
+import json
 _debug = 1
 
 
@@ -36,7 +36,7 @@ class Connection(object):
         self.url = '%s://%s/%s/' % (proto, api_host, self.version)
         self.opener = urllib2.build_opener()
         self.opener.addheaders = [('Content-Type', 'application/x-www-form-urlencoded')]
-        
+
     def _rpc(self, method, **params):
         """make an rpc call to the server"""
 
@@ -54,7 +54,7 @@ class Connection(object):
         if _debug > 1:
             print __name__, "rpc call received", data
 
-        result = simplejson.loads(data)
+        result = json.loads(data)
 
         try:
             if 'error' in result:
@@ -263,14 +263,14 @@ class Connection(object):
 
     def list_merge_var_del(self, id, tag):
         return self._api_call(method='listMergeVarDel', id=id, tag=tag)
-    
+
     def list_webhooks(self, id):
         return self._api_call(method='listWebhooks', id=id)
-    
+
     # public static listWebhookAdd(string apikey, string id, string url, array actions, array sources)
     def list_webhook_add(self, id, url, actions, sources):
         return self._api_call(method='listWebhookAdd', id=id, url=url, actions=actions, sources=sources)
-    
+
     def list_webhook_del(self, id, url):
         return self._api_call(method='listWebhookDel', id=id, url=url)
 
