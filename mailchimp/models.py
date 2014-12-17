@@ -1,5 +1,5 @@
+import json
 from django.db import models
-from django.utils import simplejson
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.core.urlresolvers import reverse
@@ -19,10 +19,10 @@ class QueueManager(models.Manager):
         Queue a campaign
         """
         kwargs = locals().copy()
-        kwargs['segment_options_conditions'] = simplejson.dumps(segment_options_conditions)
-        kwargs['type_opts'] = simplejson.dumps(type_opts)
-        kwargs['contents'] = simplejson.dumps(contents)
-        kwargs['extra_info'] = simplejson.dumps(extra_info)
+        kwargs['segment_options_conditions'] = json.dumps(segment_options_conditions)
+        kwargs['type_opts'] = json.dumps(type_opts)
+        kwargs['contents'] = json.dumps(contents)
+        kwargs['extra_info'] = json.dumps(extra_info)
         for thing in ('template_id', 'list_id'):
             thingy = kwargs[thing]
             if hasattr(thingy, 'id'):
@@ -94,7 +94,7 @@ class Queue(models.Model):
         # get connection and send the mails 
         c = get_connection()
         tpl = c.get_template_by_id(self.template_id)
-        content_data = dict([(str(k), v) for k,v in simplejson.loads(self.contents).items()])
+        content_data = dict([(str(k), v) for k,v in json.loads(self.contents).items()])
         built_template = tpl.build(**content_data)
         tracking = {'opens': self.tracking_opens, 
                     'html_clicks': self.tracking_html_clicks,
@@ -104,8 +104,8 @@ class Queue(models.Model):
         else:
             analytics = {}
         segment_opts = {'match': 'all' if self.segment_options_all else 'any',
-            'conditions': simplejson.loads(self.segment_options_conditions)}
-        type_opts = simplejson.loads(self.type_opts)
+            'conditions': json.loads(self.segment_options_conditions)}
+        type_opts = json.loads(self.type_opts)
         title = self.title or self.subject
         camp = c.create_campaign(self.campaign_type, c.get_list_by_id(self.list_id),
             built_template, self.subject, self.from_email, self.from_name,
@@ -119,7 +119,7 @@ class Queue(models.Model):
                 kwargs['content_type'] = self.content_type
                 kwargs['object_id'] = self.object_id
             if self.extra_info:
-                kwargs['extra_info'] = simplejson.loads(self.extra_info)
+                kwargs['extra_info'] = json.loads(self.extra_info)
             return Campaign.objects.create(camp.id, segment_opts, **kwargs)
         # release lock if failed
         self.locked = False
@@ -170,7 +170,7 @@ class CampaignManager(models.Manager):
             extra_info=[]):
         con = get_connection()
         camp = con.get_campaign_by_id(campaign_id)
-        extra_info = simplejson.dumps(extra_info)
+        extra_info = json.dumps(extra_info)
         obj = self.model(content=camp.content, campaign_id=campaign_id,
              name=camp.title, content_type=content_type, object_id=object_id,
              extra_info=extra_info)
@@ -219,7 +219,7 @@ class Campaign(models.Model):
     
     def get_extra_info(self):
         if self.extra_info:
-            return simplejson.loads(self.extra_info)
+            return json.loads(self.extra_info)
         return []
     
     @property
