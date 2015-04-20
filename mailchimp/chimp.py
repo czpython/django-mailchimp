@@ -163,7 +163,7 @@ class Member(BaseChimpObject):
     def __getattr__(self, attr):
         if attr in self._extended_attrs:
             return self.info[attr]
-        raise AttributeError, attr
+        raise AttributeError(attr)
     
     @property
     def interests(self):

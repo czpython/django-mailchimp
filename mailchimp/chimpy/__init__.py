@@ -1,1 +1,1 @@
-from chimpy import Connection
+from .chimpy import Connection
