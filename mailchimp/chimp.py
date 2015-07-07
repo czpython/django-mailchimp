@@ -343,7 +343,7 @@ class List(BaseChimpObject):
     def filter_members(self, segment_opts):
         """
         segment_opts = {'match': 'all' if self.segment_options_all else 'any',
-        'conditions': simplejson.loads(self.segment_options_conditions)}
+        'conditions': json.loads(self.segment_options_conditions)}
         """
         mode = all if segment_opts['match'] == 'all' else any
         conditions = [SegmentCondition(**dict((str(k), v) for k,v in c.items())) for c in segment_opts['conditions']]

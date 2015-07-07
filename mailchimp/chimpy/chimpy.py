@@ -1,10 +1,10 @@
+import json
 import urllib
 import urllib2
 import pprint
 from utils import transform_datetime
 from utils import flatten
 from warnings import warn
-from django.utils import simplejson
 _debug = 1
 
 
@@ -54,7 +54,7 @@ class Connection(object):
         if _debug > 1:
             print __name__, "rpc call received", data
 
-        result = simplejson.loads(data)
+        result = json.loads(data)
 
         try:
             if 'error' in result:

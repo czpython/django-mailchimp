@@ -69,7 +69,7 @@ class TestCampaignForObjectReal(ScheduleCampaignForObject):
                 self.message_warning("%s: %s" % (category.__name__, message))
         else:
             self.message_error("And error has occured while trying to send the test mail to you, please try again later")
-        return self.simplejson(True)
+        return self.json(True)
     
     
 class TestCampaignForObject(ScheduleCampaignForObject):
