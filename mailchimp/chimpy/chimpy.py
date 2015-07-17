@@ -273,6 +273,8 @@ class Connection(object):
             warn("cropped campaign subject to fit the 100 character limit, new subject: '%s'" % subject, ChimpyWarning)
         options['title'] = title
         options['subject'] = subject
+        if not content:
+            content = {'':''}
         return self._api_call(method='campaignCreate', type=campaign_type, options=options, content=content, **kwargs)
 
     def campaign_delete(self, cid):
