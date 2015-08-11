@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.cache import cache
 from django.contrib.contenttypes.models import ContentType
-import json
 from django.contrib.auth import logout
 from django.contrib.messages import debug, info, success, warning, error, add_message
 from django.http import (
@@ -16,6 +15,7 @@ from django.http import (
 from mailchimp.settings import API_KEY, SECURE, REAL_CACHE, CACHE_TIMEOUT
 import re
 import warnings
+import json
 
 class KeywordArguments(dict):
     def __getattr__(self, attr):
@@ -312,10 +312,10 @@ class BaseView(object):
 
     def server_error(self, data=''):
         return HttpResponseServerError(data)
-
+    
     def simplejson(self, data):
         return HttpResponse(json.dumps(data), content_type='application/json')
-
+    
     def response(self, data):
         return HttpResponse(data)
 
