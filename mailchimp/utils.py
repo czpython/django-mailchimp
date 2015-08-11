@@ -313,7 +313,7 @@ class BaseView(object):
     def server_error(self, data=''):
         return HttpResponseServerError(data)
     
-    def json(self, data):
+    def simplejson(self, data):
         return HttpResponse(json.dumps(data), content_type='application/json')
     
     def response(self, data):
