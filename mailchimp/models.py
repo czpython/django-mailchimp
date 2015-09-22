@@ -92,7 +92,7 @@ class Queue(models.Model):
     generate_text = models.BooleanField(default=False)
     auto_tweet = models.BooleanField(default=False)
     segment_options = models.BooleanField(default=False)
-    segment_options_all = models.BooleanField()
+    segment_options_all = models.BooleanField(default=False)
     segment_options_conditions = models.TextField()
     type_opts = models.TextField()
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
