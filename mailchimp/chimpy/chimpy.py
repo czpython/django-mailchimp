@@ -1,10 +1,11 @@
 import urllib
 import urllib2
 import pprint
+import json
+
 from utils import transform_datetime
 from utils import flatten
 from warnings import warn
-from django.utils import simplejson
 _debug = 1
 
 
@@ -36,7 +37,7 @@ class Connection(object):
         self.url = '%s://%s/%s/' % (proto, api_host, self.version)
         self.opener = urllib2.build_opener()
         self.opener.addheaders = [('Content-Type', 'application/x-www-form-urlencoded')]
-        
+
     def _rpc(self, method, **params):
         """make an rpc call to the server"""
 
@@ -54,11 +55,42 @@ class Connection(object):
         if _debug > 1:
             print __name__, "rpc call received", data
 
-        result = simplejson.loads(data)
+        result = json.loads(data)
 
         try:
             if 'error' in result:
                 raise ChimpyException("%s:\n%s" % (result['error'], params))
+
+            if 'errors' in result:
+                def raise_it(error_count, error_list):
+                    raise ChimpyException(
+                        "%d error(s):\n%s" %
+                        (error_count, '\n'.join(map(str, error_list)))
+                    )
+
+                if isinstance(result['errors'], list):
+                    # e.g: http://apidocs.mailchimp.com/api/1.3/listbatchsubscribe.func.php
+                    successes = (
+                        result.get('add_count', 0) +
+                        result.get('update_count', 0) +
+                        result.get('success_count', 0)
+                    )
+                    fails = result.get('error_count')
+
+                    if fails > 0 and successes == 0:
+                        # If nothing we did succeeded, raise an error.
+                        # Otherwise, we let it slide as at least some adds /
+                        # updates went OK.
+                        raise_it(fails, result['errors'])
+                elif isinstance(result['errors'], int):
+                    # e.g: http://apidocs.mailchimp.com/api/1.3/listmemberinfo.func.php
+                    fails = result['errors']
+                    errors = filter(lambda x: 'error' in x, result['data'])
+                    if fails > 0 and len(errors) == len(result['data']):
+                        # Only raise an exception if all responses failed
+                        # (e.g.: every email address we looked for on a mailing
+                        # list was missing)
+                        raise_it(fails, errors)
         except TypeError:
             # thrown when results is not iterable (eg bool)
             pass
@@ -232,14 +264,14 @@ class Connection(object):
 
     def list_merge_var_del(self, id, tag):
         return self._api_call(method='listMergeVarDel', id=id, tag=tag)
-    
+
     def list_webhooks(self, id):
         return self._api_call(method='listWebhooks', id=id)
-    
+
     # public static listWebhookAdd(string apikey, string id, string url, array actions, array sources)
     def list_webhook_add(self, id, url, actions, sources):
         return self._api_call(method='listWebhookAdd', id=id, url=url, actions=actions, sources=sources)
-    
+
     def list_webhook_del(self, id, url):
         return self._api_call(method='listWebhookDel', id=id, url=url)
 

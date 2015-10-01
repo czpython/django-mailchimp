@@ -2,5 +2,5 @@
 *.pyo
 .pydevproject
 .project
-django_mailchimp.egg-info
+django_mailchimp_v1.3.egg-info
 dist
