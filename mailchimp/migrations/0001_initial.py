@@ -1,56 +1,73 @@
-# encoding: utf-8
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-class Migration(SchemaMigration):
-    
-    def forwards(self, orm):
-        
-        # Adding model 'Campaign'
-        db.create_table('mailchimp_campaign', (
-            ('content', self.gf('django.db.models.fields.TextField')()),
-            ('sent_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('campaign_id', self.gf('django.db.models.fields.CharField')(max_length=50)),
-        ))
-        db.send_create_signal('mailchimp', ['Campaign'])
+from django.db import migrations, models
 
-        # Adding model 'Reciever'
-        db.create_table('mailchimp_reciever', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('campaign', self.gf('django.db.models.fields.related.ForeignKey')(related_name='recievers', to=orm['mailchimp.Campaign'])),
-            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
-        ))
-        db.send_create_signal('mailchimp', ['Reciever'])
-    
-    
-    def backwards(self, orm):
-        
-        # Deleting model 'Campaign'
-        db.delete_table('mailchimp_campaign')
 
-        # Deleting model 'Reciever'
-        db.delete_table('mailchimp_reciever')
-    
-    
-    models = {
-        'mailchimp.campaign': {
-            'Meta': {'object_name': 'Campaign'},
-            'campaign_id': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'content': ('django.db.models.fields.TextField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'sent_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
-        },
-        'mailchimp.reciever': {
-            'Meta': {'object_name': 'Reciever'},
-            'campaign': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'recievers'", 'to': "orm['mailchimp.Campaign']"}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        }
-    }
-    
-    complete_apps = ['mailchimp']
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('contenttypes', '0002_remove_content_type_name'),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='Campaign',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('sent_date', models.DateTimeField(auto_now_add=True)),
+                ('campaign_id', models.CharField(max_length=50)),
+                ('content', models.TextField()),
+                ('name', models.CharField(max_length=255)),
+                ('object_id', models.PositiveIntegerField(null=True, blank=True)),
+                ('extra_info', models.TextField(null=True)),
+                ('content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True)),
+            ],
+            options={
+                'ordering': ['-sent_date'],
+                'verbose_name': 'Mailchimp Log',
+                'verbose_name_plural': 'Mailchimp Logs',
+                'permissions': [('can_view', 'Can view Mailchimp information'), ('can_send', 'Can send Mailchimp newsletters')],
+            },
+        ),
+        migrations.CreateModel(
+            name='Queue',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('campaign_type', models.CharField(max_length=50)),
+                ('contents', models.TextField()),
+                ('list_id', models.CharField(max_length=50)),
+                ('template_id', models.PositiveIntegerField()),
+                ('subject', models.CharField(max_length=255)),
+                ('from_email', models.EmailField(max_length=254)),
+                ('from_name', models.CharField(max_length=255)),
+                ('to_email', models.EmailField(max_length=254)),
+                ('folder_id', models.CharField(max_length=50, null=True, blank=True)),
+                ('tracking_opens', models.BooleanField(default=True)),
+                ('tracking_html_clicks', models.BooleanField(default=True)),
+                ('tracking_text_clicks', models.BooleanField(default=False)),
+                ('title', models.CharField(max_length=255, null=True, blank=True)),
+                ('authenticate', models.BooleanField(default=False)),
+                ('google_analytics', models.CharField(max_length=100, null=True, blank=True)),
+                ('auto_footer', models.BooleanField(default=False)),
+                ('generate_text', models.BooleanField(default=False)),
+                ('auto_tweet', models.BooleanField(default=False)),
+                ('segment_options', models.BooleanField(default=False)),
+                ('segment_options_all', models.BooleanField(default=False)),
+                ('segment_options_conditions', models.TextField()),
+                ('type_opts', models.TextField()),
+                ('object_id', models.PositiveIntegerField(null=True, blank=True)),
+                ('extra_info', models.TextField(null=True)),
+                ('locked', models.BooleanField(default=False)),
+                ('content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Reciever',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('email', models.EmailField(max_length=254)),
+                ('campaign', models.ForeignKey(related_name='recievers', to='mailchimp.Campaign')),
+            ],
+        ),
+    ]
