@@ -206,8 +206,8 @@ class Campaign(models.Model):
         ordering = ['-sent_date']
         permissions = [('can_view', 'Can view Mailchimp information'),
                        ('can_send', 'Can send Mailchimp newsletters')]
-        verbose_name = _('Mailchimp Log')
-        verbose_name_plural = _('Mailchimp Logs')
+        verbose_name = _('mailchimp log')
+        verbose_name_plural = _('mailchimp logs')
         
     def get_absolute_url(self):
         return reverse('mailchimp_campaign_info', kwargs={'campaign_id': self.campaign_id})
@@ -247,6 +247,6 @@ class Campaign(models.Model):
             return DeletedCampaign()
 
 
-class Reciever(models.Model):
-    campaign = models.ForeignKey(Campaign, related_name='recievers')
+class Receiver(models.Model):
+    campaign = models.ForeignKey(Campaign, related_name='receivers')
     email = models.EmailField()
