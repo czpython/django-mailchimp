@@ -13,12 +13,17 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name='queue',
-            name='segment_options_all',
-            field=models.BooleanField(default=False),
+            name='from_email',
+            field=models.EmailField(max_length=254),
+        ),
+        migrations.AlterField(
+            model_name='queue',
+            name='to_email',
+            field=models.EmailField(max_length=254),
         ),
         migrations.AlterField(
             model_name='reciever',
-            name='campaign',
-            field=models.ForeignKey(related_name='receivers', to='mailchimp.Campaign'),
+            name='email',
+            field=models.EmailField(max_length=254),
         ),
     ]
