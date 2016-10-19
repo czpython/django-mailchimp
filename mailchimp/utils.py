@@ -4,7 +4,6 @@ import warnings
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.cache import cache
 from django.contrib.contenttypes.models import ContentType
@@ -350,6 +349,7 @@ class BaseView(object):
 
 class WarningProxy(object):
     __stuff = {}
+
     def __init__(self, logger, obj):
         WarningProxy.__stuff[self] = {}
         WarningProxy.__stuff[self]['logger'] = logger

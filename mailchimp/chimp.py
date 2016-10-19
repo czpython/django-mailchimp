@@ -1,12 +1,19 @@
+import datetime
+
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
-from mailchimp.chimpy.chimpy import Connection as BaseConnection, ChimpyException
-from mailchimp.utils import wrap, build_dict, Cache, WarningLogger
-from mailchimp.exceptions import (MCCampaignDoesNotExist, MCListDoesNotExist,
-    MCConnectionFailed, MCTemplateDoesNotExist, MCFolderDoesNotExist)
-from mailchimp.constants import *
-from mailchimp.settings import WEBHOOK_KEY
-import datetime
+
+from .chimpy.chimpy import Connection as BaseConnection, ChimpyException
+from .utils import wrap, build_dict, Cache, WarningLogger
+from .exceptions import (
+    MCCampaignDoesNotExist,
+    MCListDoesNotExist,
+    MCConnectionFailed,
+    MCTemplateDoesNotExist,
+    MCFolderDoesNotExist,
+)
+from .constants import *
+from .settings import WEBHOOK_KEY
 
 
 class SegmentCondition(object):
@@ -416,10 +423,10 @@ class Connection(object):
             if status != STATUS_OK:
                 raise MCConnectionFailed(status)
         self.is_connected = True
-        
+
     def ping(self):
         return self.con.ping()
-        
+
     @property
     def campaigns(self):
         return self.get_campaigns()

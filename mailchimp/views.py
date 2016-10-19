@@ -1,53 +1,58 @@
-from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
-from django.views.decorators.csrf import csrf_exempt
-from django.http import Http404
-from mailchimp.models import Campaign, Queue
-from mailchimp.settings import WEBHOOK_KEY
-from mailchimp.signals import get_signal
-from mailchimp.utils import BaseView, Lazy, get_connection
 import datetime
 import re
 
+from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
+from django.views.decorators.csrf import csrf_exempt
+
+from .models import Campaign, Queue
+from .settings import WEBHOOK_KEY
+from .signals import get_signal
+from .utils import BaseView, get_connection
+
+
 class MailchimpBaseView(BaseView):
+
     @property
     def connection(self):
         return get_connection()
-    
-    
+
+
 class MailchimpView(MailchimpBaseView):
     required_permissions = ['mailchimp.can_view']
 
 
 class Overview(MailchimpView):
     template = 'mailchimp/overview.html'
+
     def handle_post(self):
         return self.not_allowed()
-    
+
     def handle_get(self):
         data = {
             'paginator': self.paginate(Campaign.objects.all(), int(self.kwargs.get('page', 1))),
             'queue': Queue.objects.all()
         }
         return self.render_to_response(data)
-        
+
     def get_page_link(self, page):
         return self.reverse('mailchimp_overview', page=page)
 
 
 class ScheduleCampaignForObject(MailchimpView):
+
     def auth_check(self):
         basic = super(ScheduleCampaignForObject, self).auth_check()
         if not basic:
             return basic
         return self.request.user.has_perm('mailchimp.can_send')
-    
+
     def handle_post(self):
         return self.not_allowed()
-    
+
     def back(self):
         return self.redirect(self.request.META['HTTP_REFERER'])
-    
+
     def handle_get(self):
         ct = ContentType.objects.get(pk=self.kwargs['content_type'])
         obj = ct.model_class().objects.get(pk=self.kwargs['pk'])
@@ -56,9 +61,10 @@ class ScheduleCampaignForObject(MailchimpView):
         else:
             self.message_error("An error has occured while trying to send, please try again later.")
         return self.back()
-        
-        
+
+
 class TestCampaignForObjectReal(ScheduleCampaignForObject):
+
     def handle_get(self):
         ct = ContentType.objects.get(pk=self.kwargs['content_type'])
         obj = ct.model_class().objects.get(pk=self.kwargs['pk'])
@@ -70,7 +76,7 @@ class TestCampaignForObjectReal(ScheduleCampaignForObject):
         else:
             self.message_error("And error has occured while trying to send the test mail to you, please try again later")
         return self.json(True)
-    
+
     
 class TestCampaignForObject(ScheduleCampaignForObject):
     template = 'mailchimp/send_test.html'
@@ -86,9 +92,10 @@ class TestCampaignForObject(ScheduleCampaignForObject):
 
 class CampaignInformation(MailchimpView):
     template = 'mailchimp/campaign_information.html'
+
     def handle_post(self):
         return self.not_allowed()
-    
+
     def handle_get(self):
         camp = Campaign.objects.get_or_404(campaign_id=self.kwargs['campaign_id'])
         data = {'campaign': camp}
@@ -100,9 +107,10 @@ class CampaignInformation(MailchimpView):
         
 
 class WebHook(MailchimpBaseView):
+
     def handle_get(self):
         return self.response("hello chimp")
-    
+
     def handle_post(self):
         if self.kwargs.get('key', '') != WEBHOOK_KEY:
             return self.not_found()
@@ -155,6 +163,7 @@ class WebHook(MailchimpBaseView):
 
         
 class Dequeue(ScheduleCampaignForObject):
+
     def handle_get(self):
         q = Queue.objects.get_or_404(pk=self.kwargs['id'])
         if q.send():
@@ -165,6 +174,7 @@ class Dequeue(ScheduleCampaignForObject):
         
 
 class Cancel(ScheduleCampaignForObject):
+
     def handle_get(self):
         q = Queue.objects.get_or_404(pk=self.kwargs['id'])
         q.delete()
