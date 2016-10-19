@@ -41,14 +41,14 @@ if not callable(VIEWS_OVERVIEW):
 VIEWS_INFO = getattr(settings, 'MAILCHIMP_VIEWS_INFO', 'mailchimp.views.campaign_information')
 
 if not callable(VIEWS_INFO):
-    VIEWS_OVERVIEW = get_callable(VIEWS_INFO)
+    VIEWS_INFO = get_callable(VIEWS_INFO)
 
 VIEWS_SCHEDULE_OBJECT = getattr(settings, 'MAILCHIMP_VIEWS_SEND_OBJECT', 'mailchimp.views.schedule_campaign_for_object')
 
 if not callable(VIEWS_SCHEDULE_OBJECT):
-    VIEWS_OVERVIEW = get_callable(VIEWS_SCHEDULE_OBJECT)
+    VIEWS_SCHEDULE_OBJECT = get_callable(VIEWS_SCHEDULE_OBJECT)
 
 VIEWS_TEST_OBJECT = getattr(settings, 'MAILCHIMP_VIEWS_TEST_OBJECT', 'mailchimp.views.test_campaign_for_object')
 
 if not callable(VIEWS_TEST_OBJECT):
-    VIEWS_OVERVIEW = get_callable(VIEWS_TEST_OBJECT)
+    VIEWS_TEST_OBJECT = get_callable(VIEWS_TEST_OBJECT)
