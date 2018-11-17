@@ -1,4 +1,7 @@
-from datetime import datetime
+import math
+
+from datetime import timedelta
+
 
 
 def transform_datetime(dt):
@@ -7,10 +10,19 @@ def transform_datetime(dt):
     if dt is None:
         dt = ''
     else:
-        assert isinstance(dt, datetime)
         dt = dt.strftime('%Y-%m-%d %H:%M:%S')
-
     return dt
+
+
+def ceil_dt(dt):
+    # Taken from http://stackoverflow.com/a/13071613/389453
+    # how many secs have passed this hour
+    nsecs = dt.minute * 60 + dt.second + dt.microsecond*1e-6
+    # number of seconds to next quarter hour mark
+    # Non-analytic (brute force is fun) way:
+    delta = next(x for x in xrange(0,3601,900) if x>=nsecs) - nsecs
+    # time + number of seconds to quarter hour mark.
+    return dt + timedelta(seconds=delta)
 
 
 def flatten(params, key=None):

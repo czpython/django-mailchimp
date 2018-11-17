@@ -59,27 +59,53 @@ class Queue(models.Model):
         # aquire lock
         self.locked = True
         self.save()
+
         # get connection and send the mails
-        c = get_connection()
-        tpl = c.get_template_by_id(self.template_id)
-        content_data = dict([(str(k), v) for k,v in json.loads(self.contents).items()])
-        built_template = tpl.build(**content_data)
-        tracking = {'opens': self.tracking_opens,
-                    'html_clicks': self.tracking_html_clicks,
-                    'text_clicks': self.tracking_text_clicks}
+        connection = get_connection()
+        template = connection.get_template_by_id(self.template_id)
+
+        content_data = dict([(str(k), v) for k, v in json.loads(self.contents).items()])
+        built_template = template.build(**content_data)
+
+        tracking = {
+            'opens': self.tracking_opens,
+            'html_clicks': self.tracking_html_clicks,
+            'text_clicks': self.tracking_text_clicks,
+        }
+
         if self.google_analytics:
-            analytics = {'google': self.google_analytics}
+            analytics = {'google_analytics': self.google_analytics}
         else:
             analytics = {}
-        segment_opts = {'match': 'all' if self.segment_options_all else 'any',
-            'conditions': json.loads(self.segment_options_conditions)}
+
+        segment_opts = {
+            'match': 'all' if self.segment_options_all else 'any',
+            'conditions': json.loads(self.segment_options_conditions),
+        }
+
         type_opts = json.loads(self.type_opts)
         title = self.title or self.subject
-        camp = c.create_campaign(self.campaign_type, c.get_list_by_id(self.list_id),
-            built_template, self.subject, self.from_email, self.from_name,
-            self.to_email, self.folder_id, tracking, title, self.authenticate,
-            analytics, self.auto_footer, self.generate_text, self.auto_tweet,
-            segment_opts, type_opts)
+
+        _list = connection.get_list_by_id(self.list_id)
+
+        camp = connection.create_campaign(
+            campaign_type=self.campaign_type,
+            campaign_list=_list,
+            template=built_template,
+            subject=self.subject,
+            reply_to=self.from_email,
+            from_name=self.from_name,
+            to_name=self.to_email,
+            folder_id=self.folder_id,
+            tracking=tracking,
+            title=title,
+            authenticate=self.authenticate,
+            analytics=analytics,
+            auto_footer=self.auto_footer,
+            auto_tweet=self.auto_tweet,
+            segment_opts=segment_opts,
+            rss_opts=type_opts,
+        )
 
         if camp.send_now_async():
             self.delete()

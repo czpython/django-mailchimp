@@ -1,4 +1,3 @@
-STATUS_OK = "Everything's Chimpy!"
 REGULAR_CAMPAIGN = 'regular'
 PLAINTEXT_CAMPAIGN = 'plaintext'
 ABSPLIT_CAMPAIGN = 'absplit'

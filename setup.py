@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 version = __import__('mailchimp').__version__
 
 setup(
-    name = 'django-mailchimp-v1.3',
+    name = 'django-mailchimp',
     version = version,
     description = 'Mailchimp wrapper for Django, using Mailchimp API 1.3',
     author = 'Jonas Obrist et al.',
