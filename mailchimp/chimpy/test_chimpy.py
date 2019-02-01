@@ -4,7 +4,7 @@ Tests for chimpy. Run them with noserunner
 You need to activate groups in the Mailchimp web UI before running tests:
 
  * Browse to http://admin.mailchimp.com
- * List setting -> Groups for segmentation 
+ * List setting -> Groups for segmentation
  * Check "add groups to my list"
 
 """
@@ -13,8 +13,9 @@ import os
 import pprint
 import operator
 import random
-import md5
+import hashlib
 import datetime
+import six
 
 import chimpy
 
@@ -33,7 +34,6 @@ def setup_module():
         "you can get a new api key by calling:\n" \
         " wget 'http://api.mailchimp.com/1.1/?output=json&method=login" \
         "&password=xxxxxx&username=yyyyyyyy' -O apikey"
-
 
     global chimp
     chimp = chimpy.Connection(os.environ['MAILCHIMP_APIKEY'])
@@ -66,9 +66,9 @@ def test_list_subscribe_and_unsubscribe():
     assert result == True
 
     members = chimp.list_members(list_id())['data']
-    print members
+    print(members)
     emails = map(lambda x: x['email'], members)
-    print members
+    print(members)
     assert EMAIL_ADDRESS in emails
 
     result = chimp.list_unsubscribe(list_id(),
@@ -160,7 +160,7 @@ def test_list_update_member_and_member_info():
 
 
 def test_create_delete_campaign():
-    uid = md5.new(str(random.random())).hexdigest()
+    uid = hashlib.md5(str(random.random())).hexdigest()
     subject = 'chimpy campaign test %s' % uid
     options = {'list_id': list_id(),
            'subject': subject,
@@ -180,7 +180,7 @@ def test_create_delete_campaign():
 
     content = {'html': html}
     cid = chimp.campaign_create('regular', options, content, segment_opts=segment_opts)
-    assert isinstance(cid, basestring)
+    assert isinstance(cid, six.string_types)
 
     # check if the new campaign really is there
     campaigns = chimp.campaigns(filter_subject=subject)
@@ -215,7 +215,7 @@ def test_replicate_update_campaign():
     cid = chimp.campaign_create('regular', options, content)
 
     newcid = chimp.campaign_replicate(cid=cid)
-    assert isinstance(newcid, basestring)
+    assert isinstance(newcid, six.string_types)
 
     newsubject = 'Fresh subject ' + uid
     newtitle = 'Custom title ' + uid
@@ -305,5 +305,5 @@ if __name__ == '__main__':
     setup_module()
     for f in globals().keys():
         if f.startswith('test_') and callable(globals()[f]):
-            print f
+            print(f)
             globals()[f]()

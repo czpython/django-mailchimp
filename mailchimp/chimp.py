@@ -29,7 +29,7 @@ class SegmentCondition(object):
         'starts': lambda a,b: str(a).startswith(str(b)),
         'ends': lambda a,b: str(a).endswith(str(b))
     }
-    
+
     def __init__(self, condition_type, field, op, value):
         self.condition_type = condition_type
         self.field = field
@@ -39,10 +39,10 @@ class SegmentCondition(object):
         if not hasattr(self, check_function_name):
             check_function_name = 'merge_check'
         self.checker = getattr(self, check_function_name)
-        
+
     def check(self, member):
         return self.checker(member)
-    
+
     def check_interests(self, member):
         interests = self.value.split(',')
         if self.op == 'all':
@@ -60,7 +60,7 @@ class SegmentCondition(object):
                 if interest in member.interests:
                     return False
             return True
-        
+
     def merge_check(self, member):
         return self.OPERATORS[self.op](member.merges[self.field.upper()], self.value)
 
@@ -68,10 +68,10 @@ class SegmentCondition(object):
 class BaseChimpObject(object):
     _attrs = ()
     _methods = ()
-    
+
     verbose_attr = 'id'
     cache_key = 'id'
-    
+
     def __init__(self, master, info):
         self.master = master
 
@@ -84,10 +84,10 @@ class BaseChimpObject(object):
         base = self.__class__.__name__.lower()
         self.cache = master.cache.get_child_cache(getattr(self, self.cache_key))
         self.con = master.con
-        
+
         for method in self._methods:
             setattr(self, method, wrap(base, self.master.con, method, self.id))
-            
+
     def __repr__(self):
         verbose = getattr(self, self.verbose_attr).encode('utf-8')
         return '<%s object: %s>' % (self.__class__.__name__, verbose)
@@ -101,10 +101,10 @@ class Campaign(BaseChimpObject):
               'settings.from_name', 'id', 'settings.inline_css', 'recipients.list_id',
               'send_time', 'status', 'settings.subject_line', 'settings.title',
               'settings.to_name', 'type')
-    
+
     _methods =  ('delete', 'pause', 'replicate', 'resume', 'schedule',
                  'send_now', 'send_test', 'unschedule')
-    
+
     verbose_attr = 'subject_line'
 
     def __init__(self, master, info):
@@ -115,7 +115,7 @@ class Campaign(BaseChimpObject):
             self.list = None
         self._content = None
         self.frozen_info = info
-        
+
     def __unicode__(self):
         return self.subject
 
@@ -127,22 +127,22 @@ class Campaign(BaseChimpObject):
         if self._content is None:
             self._content = self.con.campaign_content(self.id)
         return self._content
-    
+
     def send_now_async(self):
         return self.send_now()
 
     def delete(self):
         return self.con.campaign_delete(self.id)
-        
+
     def pause(self):
         return self.con.campaign_pause(self.id)
-        
+
     def update(self):
         status = []
         for key, value in self._get_diff():
             status.append(self.con.campaign_update(self.id, key, value))
         return all(status)
-    
+
     def _get_diff(self):
         diff = []
         new_frozen = {}
@@ -153,30 +153,30 @@ class Campaign(BaseChimpObject):
             new_frozen[key] = current
         self.frozen_info = new_frozen
         return diff
-    
+
     @property
     def is_sent(self):
         return self.status == 'sent'
-        
-        
+
+
 class Member(BaseChimpObject):
     _attrs = ('email', 'timestamp')
-    
+
     _extended_attrs = ('id', 'ip_opt', 'ip_signup', 'merge_fields', 'status', 'interests')
 
     verbose_attr = 'email'
     cache_key = 'email'
-    
+
     def __init__(self, master, info):
         super(Member, self).__init__(master, info)
-        
+
     def __unicode__(self):
         return self.email
 
     def __getattr__(self, attr):
         if attr in self._extended_attrs:
             return self.info[attr]
-        raise AttributeError, attr
+        raise AttributeError(attr)
 
     @property
     def merges(self):
@@ -185,45 +185,45 @@ class Member(BaseChimpObject):
     @property
     def info(self):
         return self.get_info()
-            
+
     def get_info(self):
         return self.cache.get('list_member_info', self.con.list_member_info, self.master.id, self.email)
-    
+
     def update(self):
         return self.con.list_update_member(self.master.id, self.email, self.merges, interests=self.interests)
-    
-    
+
+
 class LazyMemberDict(dict):
     def __init__(self, master):
         super(LazyMemberDict, self).__init__()
         self._list = master
-        
+
     def __getitem__(self, key):
         if key in self:
             return super(LazyMemberDict, self).__getitem__(key)
         value = self._list.get_member(key)
         self[key] = value
         return value
-        
-        
+
+
 class List(BaseChimpObject):
     '''
     This represents a mailing list. Most of the methods (defined in _methods) are wrappers of the flat
     API found in chimpy.chimpy. As such, signatures are the same.
     '''
-    _methods = ('batch_subscribe', 
-                'batch_unsubscribe', 
+    _methods = ('batch_subscribe',
+                'batch_unsubscribe',
                 'subscribe',
                 'unsubscribe')
-    
+
     _attrs = ('id', 'date_created', 'name', 'stats')
 
     verbose_attr = 'name'
-    
+
     def __init__(self, *args, **kwargs):
         super(List, self).__init__(*args, **kwargs)
         self.members = LazyMemberDict(self)
-    
+
     def segment_test(self, match, conditions):
         return self.master.con.campaign_segment_test(self.id, {'match': match, 'conditions': conditions})
 
@@ -263,28 +263,28 @@ class List(BaseChimpObject):
     @property
     def webhooks(self):
         return self.get_webhooks()
-    
+
     def get_webhooks(self):
         return self.cache.get('webhooks', self.master.con.list_webhooks, self.id)
-    
+
     def add_webhook(self, url, actions, sources):
         return self.master.con.list_webhook_add(self.id, url, actions, sources)
-    
+
     def remove_webhook(self, url):
         return self.master.con.list_webhook_del(self.id, url)
-    
+
     def add_webhook_if_not_exists(self, url, actions, sources):
         for webhook in self.webhooks:
             if webhook['url'] == url:
                 return True
         return self.add_webhook(url, actions, sources)
-    
+
     def install_webhook(self):
         domain = Site.objects.get_current().domain
         if not (domain.startswith('http://') or domain.startswith('https://')):
             domain = 'http://%s' % domain
         if domain.endswith('/'):
-            domain = domain[:-1] 
+            domain = domain[:-1]
         url = domain + reverse('mailchimp_webhook', kwargs={'key': WEBHOOK_KEY})
         actions = {'subscribe': True,
                    'unsubscribe': True,
@@ -302,7 +302,7 @@ class List(BaseChimpObject):
 
     def remove_merge(self, key):
         return self.master.con.list_merge_var_del(self.id, key)
-    
+
     def add_merges_if_not_exists(self, *new_merges):
         self.cache.flush('merges')
         merges = [m['tag'].upper() for m in self.merges]
@@ -310,14 +310,14 @@ class List(BaseChimpObject):
             if merge.upper() not in merges:
                 self.add_merge(merge, merge, False)
                 merges.append(merge.upper())
-    
+
     @property
     def merges(self):
         return self.get_merges()
-    
+
     def get_merges(self):
         return self.cache.get('merges', self.master.con.list_merge_vars, self.id)
-    
+
     def __unicode__(self):
         return self.name
 
@@ -331,7 +331,7 @@ class List(BaseChimpObject):
         memberdata['timestamp'] = data['timestamp_signup']
         memberdata['email'] = data['email_address']
         return Member(self, memberdata)
-    
+
     def filter_members(self, segment_opts):
         """
         segment_opts = {'match': 'all' if self.segment_options_all else 'any',
@@ -390,7 +390,7 @@ class Connection(object):
         'lists': MCListDoesNotExist,
         'folders': MCFolderDoesNotExist,
     }
-    
+
     def __init__(self, api_key=None, secure=False, check=True):
         self._secure = secure
         self._check = check
@@ -399,7 +399,7 @@ class Connection(object):
         self.is_connected = False
         if api_key is not None:
             self.connect(api_key)
-            
+
     def connect(self, api_key):
         self._api_key = api_key
         self.cache = Cache(api_key)
@@ -415,14 +415,14 @@ class Connection(object):
     @property
     def campaigns(self):
         return self.get_campaigns()
-    
+
     def get_campaigns(self):
         return self.cache.get('campaigns', self._get_campaigns)
 
     @property
     def lists(self):
         return self.get_lists()
-    
+
     def get_lists(self):
         return self.cache.get('lists', self._get_lists)
 
@@ -432,13 +432,13 @@ class Connection(object):
 
     def get_templates(self):
         return self.cache.get('templates', self._get_templates)
-    
+
     def _get_campaigns(self):
         return build_dict(self, Campaign, self.con.campaigns())
 
     def _get_lists(self):
         return build_dict(self, List, self.con.lists())
-    
+
     def _get_templates(self):
         templates = self.con.campaign_templates()
         return build_dict(self, Template, templates)
@@ -452,10 +452,10 @@ class Connection(object):
 
     def _get_folders(self):
         return build_dict(self, Folder, self.con.folders(), key='folder_id')
-    
+
     def get_list_by_id(self, id):
         return self._get_by_id('lists', id)
-    
+
     def get_campaign_by_id(self, id):
         return build_dict(self, Campaign, [self.con.campaign(id)])[id]
 
@@ -480,13 +480,13 @@ class Connection(object):
                 return getattr(self, thing)[id]
             except KeyError:
                 raise self.DOES_NOT_EXIST[thing](id)
-            
+
     def _get_by_key(self, thing, name, key):
         for id, obj in getattr(self, thing).items():
             if getattr(obj, name) == key:
                 return obj
         raise self.DOES_NOT_EXIST[thing]('%s=%s' % (name, key))
-        
+
     def create_campaign(self, campaign_type, campaign_list, template, subject,
             reply_to, from_name, to_name, folder_id=None,
             tracking=None, title='', authenticate=False,

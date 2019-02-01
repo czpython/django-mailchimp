@@ -11,4 +11,4 @@ mc_campaign = Signal(providing_args=["fired_at", "list", "campaign_id", "reason"
 
 
 def get_signal(name):
-    return globals()['mc_%s' % name]
+    return globals()['mc_{}'.format(name)]

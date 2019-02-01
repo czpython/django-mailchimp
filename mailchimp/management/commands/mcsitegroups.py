@@ -5,13 +5,13 @@ from mailchimp.utils import get_connection
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        print 'Installing site segment groups for all lists and all sites'
+        print('Installing site segment groups for all lists and all sites')
         c = get_connection()
         interests = []
         for site in Site.objects.all():
             interests.append(site.domain)
         for list in c.lists.values():
-            print 'Checking list %s' % list.name
+            print('Checking list {}'.format(list.name))
             list.add_interests_if_not_exist(*interests)
-            print '  ok'
-        print 'Done'
+            print('  ok')
+        print('Done')

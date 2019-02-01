@@ -70,17 +70,17 @@ class TestCampaignForObjectReal(ScheduleCampaignForObject):
         obj = ct.model_class().objects.get(pk=self.kwargs['pk'])
         self.connection.warnings.reset()
         if obj.mailchimp_test(self.connection, self.request):
-            self.message_success("A Test Campaign has been sent to your email address (%s)." % self.request.user.email)
+            self.message_success("A Test Campaign has been sent to your email address ({}).".format(self.request.user.email))
             for message, category, filename, lineno in self.connection.warnings.get():
-                self.message_warning("%s: %s" % (category.__name__, message))
+                self.message_warning("{}: {}".format(category.__name__, message))
         else:
             self.message_error("And error has occured while trying to send the test mail to you, please try again later")
         return self.json(True)
 
-    
+
 class TestCampaignForObject(ScheduleCampaignForObject):
     template = 'mailchimp/send_test.html'
-    
+
     def handle_get(self):
         referer = self.request.META.get('HTTP_REFERER') or '/'
         data = {
@@ -104,7 +104,7 @@ class CampaignInformation(MailchimpView):
             extra_info = camp.object.mailchimp_get_extra_info()
         data['extra_info'] = extra_info
         return self.render_to_response(data)
-        
+
 
 class WebHook(MailchimpBaseView):
 
@@ -161,7 +161,7 @@ class WebHook(MailchimpBaseView):
         signal.send(sender=self.connection, **kwargs)
         return self.response("ok")
 
-        
+
 class Dequeue(ScheduleCampaignForObject):
 
     def handle_get(self):
@@ -171,7 +171,7 @@ class Dequeue(ScheduleCampaignForObject):
         else:
             self.message_error("An error has occured while trying to dequeue this campaign, please try again later.")
         return self.back()
-        
+
 
 class Cancel(ScheduleCampaignForObject):
 

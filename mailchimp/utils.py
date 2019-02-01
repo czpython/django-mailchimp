@@ -67,7 +67,7 @@ class Cache(object):
             del self._data[key]
 
     def get_child_cache(self, key):
-        return Cache('%s_%s_' % (self._prefix, key))
+        return Cache('{}_{}_'.format(self._prefix, key))
 
     def flush(self, *keys):
         for key in keys:
@@ -86,7 +86,7 @@ def wrap(base, parent, name, *baseargs, **basekwargs):
     def _wrapped(*args, **kwargs):
         fullargs = baseargs + args
         kwargs.update(basekwargs)
-        return getattr(parent, '%s_%s' % (base, name))(*fullargs, **kwargs)
+        return getattr(parent, '{}_{}'.format(base, name))(*fullargs, **kwargs)
     return _wrapped
 
 
@@ -256,7 +256,7 @@ class BaseView(object):
 
 
     def get_page_link(self, page):
-        return '%s?page=%s' % (self.request.path, page)
+        return '{}?page={}'.format(self.request.path, page)
 
     def paginate(self, objects, page):
         return Paginator(objects, page, self.get_page_link, 20, 5)

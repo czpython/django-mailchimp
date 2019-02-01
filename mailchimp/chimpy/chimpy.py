@@ -1,6 +1,14 @@
 import json
 import hashlib
-import urllib
+import six
+try:
+    from urllib import quote_plus, urlencode
+except ImportError:
+    from urllib.parse import quote_plus, urlencode
+try:
+    from urllib2 import build_opener
+except ImportError:
+    from urllib.request import build_opener
 from warnings import warn
 
 from requests import request
@@ -82,7 +90,7 @@ class Connection(object):
 
         try:
             response.raise_for_status()
-        except HTTPError, e:
+        except HTTPError as e:
             message = response.json()['detail']
             raise ChimpyException(message)
         return response.json()
@@ -272,19 +280,17 @@ class Connection(object):
     def campaign_create(self, campaign_type, settings, **kwargs):
         # enforce the 100 char limit (urlencoded!!!)
         title = settings.get('title', settings['subject_line'])
-
-        if isinstance(title, unicode):
+        if isinstance(title, six.text_types):
             title = title.encode('utf-8')
-        titlelen = len(urllib.quote_plus(title))
+        titlelen = len(quote_plus(title))
 
         if titlelen > 99:
             title = title[:-(titlelen - 96)] + '...'
             warn("cropped campaign title to fit the 100 character limit, new title: '%s'" % title, ChimpyWarning)
         subject = settings['subject_line']
-
-        if isinstance(subject, unicode):
+        if isinstance(subject, six.text_types):
             subject = subject.encode('utf-8')
-        subjlen = len(urllib.quote_plus(subject))
+        subjlen = len(quote_plus(subject))
 
         if subjlen > 99:
             subject = subject[:-(subjlen - 96)] + '...'
@@ -351,7 +357,7 @@ class Connection(object):
     def campaign_send_test(self, cid, test_emails, send_type='html'):
         path = 'campaigns/{}/actions/test'.format(cid)
 
-        if isinstance(test_emails, basestring):
+        if isinstance(test_emails, six.string_types):
             test_emails = [test_emails]
 
         payload = {
