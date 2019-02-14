@@ -33,7 +33,15 @@ Installation:
 
 3. Add ``mailchimp`` to your project's list of INSTALLED_APPS
 
-4. To start using the API, you should start by using utils.get_connection(). This will use the API_KEY you
+4. Add mailchimp urls to admin space::
+
+    from mailchimp import urls as mailchimp_urls
+
+    urlpatterns += (
+        url(r'^admin/mailchimp', include(mailchimp_urls)),
+    )
+
+5. To start using the API, you should start by using utils.get_connection(). This will use the API_KEY you
 just defined in settings.py
 
 
